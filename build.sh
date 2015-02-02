@@ -45,6 +45,7 @@ else
 fi
 
 # Compile statically linked version of package
+echo "Building $pkgName"
 CGO_ENABLED=0 go build -a -installsuffix cgo -ldflags '-s' $pkgName
 
 # Grab the last segment from the package name
