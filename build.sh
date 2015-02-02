@@ -35,8 +35,14 @@ mkdir -p "$(dirname "$pkgPath")"
 # Link source dir into GOPATH
 ln -sf /src "$pkgPath"
 
-# Get all package dependencies
-go get -d -v ./... 
+if [ -e "$pkgPath/Godeps/_workspace" ];
+then
+  # Add local godeps dir to GOPATH
+  GOPATH=$pkgPath/Godeps/_workspace:$GOPATH
+else
+  # Get all package dependencies
+  go get -d -v ./...
+fi
 
 # Compile statically linked version of package
 CGO_ENABLED=0 go build -a -installsuffix cgo -ldflags '-s' $pkgName
