@@ -47,11 +47,18 @@ This convention is in place so that the *golang-builder* knows where to find the
 ### Canonical Import Path
 In addition to knowing where to find the "main" package, the *golang-builder* also needs to know the fully-qualified package name for your application. For the "hello" application shown above, the fully-qualified package name for the executable is "github.com/CenturyLink/hello" but there is no way to determine that just by looking at the project directory structure (during the development, the project directory would likely be mounted at `$GOPATH/src/github.com/CenturyLink/hello` so that the Go tools can determine the package name).
 
-In version 1.4 of Go an annotation was introduced which allows you to identify the [canonical import path](https://golang.org/doc/go1.4#canonicalimports) as part of the `package` clause in your source code. The annotation is a specially formatted comment that appears immediately after the `package` clause:
+In version 1.4 of Go an annotation was introduced which allows you to identify the [canonical import path](https://golang.org/doc/go1.4#canonicalimports) as part of your source code. The annotation is a specially formatted comment that appears immediately after the `package` clause:
 
     package main // import "github.com/CenturyLink/hello"
 
 The *golang-builder* will read this annotation from your source code and use it to mount the source code into the proper place in the GOPATH for compilation.
+
+### Dependencies
+There's a good chance that your project imports at least one third-party Go package. The *golang-builder* obviously needs access to any packages that you've imported in order to compile your code. By default, *golang-builder* will `go get` any packages you've imported which aren't part of your project already.
+
+The problem with doing a `go get` with each build is that *golang-builder* may end up with versions of packages which are different than those you developed against. Depending on the stability of the packages that you are importing this may not be an issue. However, if you want to maintain strict control over your dependency versions you may want to look at the [Godep](https://github.com/tools/godep#readme) tool.
+
+If you are using Godep to manage your dependencies *golang-builder* will reference the packages in your `Godeps/_workspace` directory instead of downloading them via `go get`.
 
 ### Dockerfile
 If you would like to have *golang-builder* package your compiled Go application into a Docker image automatically then the final requirement is that your Dockerfile be placed at the root of your project directory structure. After compiling your Go application, *golang-builder* will execute a `docker build` with your Dockerfile.
