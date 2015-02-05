@@ -8,12 +8,6 @@ then
   exit 990
 fi
 
-if ! [ -e "/var/run/docker.sock" ];
-then
-  echo "Error: Docker socket must be mounted at /var/run/docker.sock"
-  exit 991
-fi
-
 # Grab Go package name
 pkgName="$(go list -e -f '{{.ImportComment}}' 2>/dev/null || true)"
 
@@ -48,11 +42,14 @@ fi
 echo "Building $pkgName"
 CGO_ENABLED=0 go build -a -installsuffix cgo -ldflags '-s' $pkgName
 
-# Grab the last segment from the package name
-name=${pkgName##*/}
+if [ -e "/var/run/docker.sock" ] && [ -e "./Dockerfile" ];
+then
+  # Grab the last segment from the package name
+  name=${pkgName##*/}
 
-# Default TAG_NAME to package name if not set explicitly
-tagName=${tagName:-"$name":latest}
+  # Default TAG_NAME to package name if not set explicitly
+  tagName=${tagName:-"$name":latest}
 
-# Build the image from the Dockerfile in the package directory
-docker build -t $tagName .
+  # Build the image from the Dockerfile in the package directory
+  docker build -t $tagName .
+fi
