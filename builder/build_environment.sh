@@ -35,5 +35,5 @@ then
   GOPATH=$pkgPath/Godeps/_workspace:$GOPATH
 else
   # Get all package dependencies
-  go get -d -v ./...
+  go get -t -d -v ./...
 fi
