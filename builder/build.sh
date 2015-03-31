@@ -4,7 +4,7 @@ source /build_environment.sh
 
 # Compile statically linked version of package
 echo "Building $pkgName"
-CGO_ENABLED=0 go build -a -installsuffix cgo -ldflags '-s' $pkgName
+CGO_ENABLED=${CGO_ENABLED:-0} go build -a --installsuffix cgo --ldflags='${LDFLAGS:--s}' $pkgName
 
 if [ -e "/var/run/docker.sock" ] && [ -e "./Dockerfile" ];
 then
