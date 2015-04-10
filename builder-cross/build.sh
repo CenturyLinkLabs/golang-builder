@@ -16,6 +16,7 @@ for GOOS in darwin linux; do
                         --installsuffix cgo \
                         --ldflags="${LDFLAGS:--s}" \
                         $pkgName`
+                rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
         done
 done
 
