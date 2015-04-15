@@ -6,11 +6,16 @@ source /build_environment.sh
 echo "Building $pkgName"
 `CGO_ENABLED=${CGO_ENABLED:-0} go build -a --installsuffix cgo --ldflags="${LDFLAGS:--s}" $pkgName`
 
+# Grab the last segment from the package name
+name=${pkgName##*/}
+
+if [[ $COMPRESS_BINARY == "true" ]];
+then
+  goupx $name
+fi
+
 if [ -e "/var/run/docker.sock" ] && [ -e "./Dockerfile" ];
 then
-  # Grab the last segment from the package name
-  name=${pkgName##*/}
-
   # Default TAG_NAME to package name if not set explicitly
   tagName=${tagName:-"$name":latest}
 
