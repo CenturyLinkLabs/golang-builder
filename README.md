@@ -104,6 +104,21 @@ If you just want to compile your application without packaging it in a Docker im
 
     docker run --rm -v $(pwd):/src centurylink/golang-builder
 
+### Additional Options
+
+* CGO_ENABLED - whether or not to compile the binary with CGO (defaults to false)
+* LDFLAGS - flags to pass to the linker (defaults to '-s')
+* COMPRESS_BINARY - if set to true, will use UPX to compress the final binary (defaults to false)
+
+The above are environment variables to be passed to the docker run command:
+
+    docker run --rm \
+      -e CGO_ENABLED=true \
+      -e LDFLAGS='-extldflags "-static"' \
+      -e COMPRESS_BINARY=true \
+      -v $(pwd):/src \
+      centurylink/golang-builder
+
 ## SSL Verification
 
 If your Go application needs to make calls to SSL endpoints you may find your application failing with a message like:
