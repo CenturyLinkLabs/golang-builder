@@ -119,6 +119,12 @@ The above are environment variables to be passed to the docker run command:
       -v $(pwd):/src \
       centurylink/golang-builder
 
+### Cross-compilation
+
+An additional image, `centurylink/golang-builder-cross`, exists that works identically to `golang-builder` save for the presence of the additional options presented above. This uses a larger base image that will build linux and OSX binaries for 32- and 64-bit, named like `mypackage-darwin-amd64`. This will use CGO, and you may find that some code – for example things from the `os` package – do not behave the same under cross-compilation in a container as they do natively compiled in OSX.
+
+More information can be found in [the Docker Hub page](https://registry.hub.docker.com/_/golang/) for the official Go images.
+
 ## SSL Verification
 
 If your Go application needs to make calls to SSL endpoints you may find your application failing with a message like:
