@@ -1,4 +1,6 @@
 # golang-builder
+[![](https://badge.imagelayers.io/centurylink/golang-builder.svg)](https://imagelayers.io/?images=centurylink/golang-builder:latest 'Get your own badge on imagelayers.io')
+
 Containerized build environment for compiling an executable Golang package and packaging 
 it in a light-weight Docker container.
 
