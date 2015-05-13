@@ -88,7 +88,7 @@ Assuming that the source code for your Go executable package is located at
 `/home/go/src/github.com/CenturyLink/hello` on your local system and you're currently in the `hello` directory, you'd run the `golang-builder` container as follows:
 
     docker run --rm \
-      -v $(pwd):/src \
+      -v "$(pwd):/src" \
       -v /var/run/docker.sock:/var/run/docker.sock \
       centurylink/golang-builder
 
@@ -97,7 +97,7 @@ This would result in the creation of a new Docker image named `hello:latest`.
 Note that the image tag is generated dynamically from the name of the Go package. If you'd like to specify an image tag name you can provide it as an argument after the image name.
 
     docker run --rm \
-      -v $(pwd):/src \
+      -v "$(pwd):/src" \
       -v /var/run/docker.sock:/var/run/docker.sock \
       centurylink/golang-builder \
       centurylink/hello:1.0
