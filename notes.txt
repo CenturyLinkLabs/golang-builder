@@ -1,0 +1,6 @@
+* Refactor build and test images into a single image.
+* Explored the idea of using a smaller base image for the builder, but need to be able to install both Go and gcc in the container. you can install both of those into alpine, but alpine uses musl instead of glibc. that doesn't matter if you can do static compilation, but for dynamic compilation, linking to glibc makes the app more portable (avaiable on Debian/Ubuntu). Probably best to just use golang image
+* Need to support both static and traditional dynamic compilation
+  * Certain dependencies require dynamic compilation: "net", "os/user"
+  * Could support CGO enabled static compilation but it is sketchy since there are certain things that just won't work. Better approach is to support CGO-disabled static comp or just regular dynamic comp (for when you need either "net", "os/user" or c-code
+* Look at test project on pair1 for an app that exercises all problem areas
