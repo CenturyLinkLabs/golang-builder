@@ -2,4 +2,9 @@
 
 source /build_environment.sh
 
-go test -v  ./...
+if [ "$GO15VENDOREXPERIMENT"=="1" ]; 
+then
+    go test -v $(go list ./... | grep -v /vendor/ | sed s,_/src,$pkgName,g)
+else
+    go test -v  ./...
+fi

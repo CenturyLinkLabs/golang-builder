@@ -29,7 +29,11 @@ mkdir -p "$(dirname "$pkgPath")"
 # Link source dir into GOPATH
 ln -sf /src "$pkgPath"
 
-if [ -e "$pkgPath/Godeps/_workspace" ];
+if [ -e "$pkgPath/vendor" ];
+then
+    # Enable vendor experiment
+    export GO15VENDOREXPERIMENT=1
+elif [ -e "$pkgPath/Godeps/_workspace" ];
 then
   # Add local godeps dir to GOPATH
   GOPATH=$pkgPath/Godeps/_workspace:$GOPATH
