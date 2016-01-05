@@ -4,7 +4,12 @@ source /build_environment.sh
 
 # Compile statically linked version of package
 echo "Building $pkgName"
-`CGO_ENABLED=${CGO_ENABLED:-0} go build -a --installsuffix cgo --ldflags="${LDFLAGS:--s}" $pkgName`
+if [[ $BUILD_RACE_DETECTION == "true" ]];
+then
+  `CGO_ENABLED=${CGO_ENABLED:-0} go build -a -race --installsuffix cgo --ldflags="${LDFLAGS:--s}" $pkgName` 
+else
+  `CGO_ENABLED=${CGO_ENABLED:-0} go build -a --installsuffix cgo --ldflags="${LDFLAGS:--s}" $pkgName`
+fi
 
 # Grab the last segment from the package name
 name=${pkgName##*/}
