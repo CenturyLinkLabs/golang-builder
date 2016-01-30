@@ -21,7 +21,15 @@ then
   dockerArgs="$dockerArgs --no-cache"
 fi
 
-if [ -e "/var/run/docker.sock" ] && [ -e "./Dockerfile" ];
+dockerFile="Dockerfile"
+
+if [[ $DOCKERFILE != "" ]];
+then
+  dockerFile=$DOCKERFILE
+  dockerArgs="$dockerArgs -f $DOCKERFILE"
+fi
+
+if [ -e "/var/run/docker.sock" ] && [ -e "./$dockerFile" ];
 then
   # Default TAG_NAME to package name if not set explicitly
   tagName=${tagName:-"$name":latest}
