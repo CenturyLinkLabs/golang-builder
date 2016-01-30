@@ -7,7 +7,6 @@ RUN wget -nv https://get.docker.com/builds/Linux/x86_64/docker-1.3.3 -O /usr/bin
   chmod +x /usr/bin/docker
 RUN go get github.com/pwaller/goupx
 
-VOLUME /src
 WORKDIR /src
 
 COPY build_environment.sh /
