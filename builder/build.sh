@@ -38,11 +38,26 @@ then
   fi
 fi
 
-if [[ -e "/var/run/docker.sock"  &&  -e "./Dockerfile" ]];
+dockerArgs=""
+
+if [[ $NO_CACHE == "true" ]];
+then
+  dockerArgs="$dockerArgs --no-cache"
+fi
+
+dockerFile="Dockerfile"
+
+if [[ $DOCKERFILE != "" ]];
+then
+  dockerFile=$DOCKERFILE
+  dockerArgs="$dockerArgs -f $DOCKERFILE"
+fi
+
+if [[ -e "/var/run/docker.sock" && -e "./$dockerFile" ]];
 then
   # Default TAG_NAME to package name if not set explicitly
   tagName=${tagName:-"$name":latest}
 
   # Build the image from the Dockerfile in the package directory
-  docker build -t $tagName .
+  docker build $dockerArgs -t $tagName .
 fi

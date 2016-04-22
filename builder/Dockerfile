@@ -10,7 +10,6 @@ RUN wget -nv \
 
 RUN go get github.com/pwaller/goupx
 
-VOLUME /src
 WORKDIR /src
 
 COPY build_environment.sh /
