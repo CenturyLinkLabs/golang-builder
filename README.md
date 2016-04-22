@@ -1,7 +1,7 @@
 # golang-builder
 [![](https://badge.imagelayers.io/centurylink/golang-builder.svg)](https://imagelayers.io/?images=centurylink/golang-builder:latest 'Get your own badge on imagelayers.io')
 
-Containerized build environment for compiling an executable Golang package and packaging 
+Containerized build environment for compiling an executable Golang package and packaging
 it in a light-weight Docker container.
 
 ## Overview
@@ -41,7 +41,7 @@ The *golang-builder* assumes that your "main" package (the package containing yo
     | └─greeting_test.go
     ├─hello.go
     └─hello_test.go
-   
+
 In the example above, the `hello.go` source file defines the "main" package for this project and lives at the root of the project directory structure. This project defines other packages ("api" and "greeting") but those are subdirectories off the root.
 
 This convention is in place so that the *golang-builder* knows where to find the "main" package in the project structure. In a future release, we may make this a configurable option in order to support projects with different directory structures.
@@ -84,7 +84,7 @@ application code and wrap it in a Docker image:
 * Access to your source code. Inject your source code into the container by mounting it at the `/src` mount point with the `-v` flag.
 * Access to the Docker API socket. Since the *golang-builder* code needs to interact with the Docker API in order to build the final image, you need to mount `/var/run/docker.sock` into the container with the `-v` flag when you run it. If you omit the volume mount for the Docker socket, the application will be compiled but not packaged into a Docker image.
 
-Assuming that the source code for your Go executable package is located at 
+Assuming that the source code for your Go executable package is located at
 `/home/go/src/github.com/CenturyLink/hello` on your local system and you're currently in the `hello` directory, you'd run the `golang-builder` container as follows:
 
     docker run --rm \
@@ -111,6 +111,7 @@ If you just want to compile your application without packaging it in a Docker im
 * CGO_ENABLED - whether or not to compile the binary with CGO (defaults to false)
 * LDFLAGS - flags to pass to the linker (defaults to '-s')
 * COMPRESS_BINARY - if set to true, will use UPX to compress the final binary (defaults to false)
+* OUTPUT - if set, will use the `-o` option with `go build` to output the final binary to the value of this env var
 
 The above are environment variables to be passed to the docker run command:
 
@@ -118,6 +119,7 @@ The above are environment variables to be passed to the docker run command:
       -e CGO_ENABLED=true \
       -e LDFLAGS='-extldflags "-static"' \
       -e COMPRESS_BINARY=true \
+      -e OUTPUT=/bin/my_go_binary \
       -v $(pwd):/src \
       centurylink/golang-builder
 
@@ -142,7 +144,7 @@ More information can be found in [the Docker Hub page](https://registry.hub.dock
 If your Go application needs to make calls to SSL endpoints you may find your application failing with a message like:
 
     x509: failed to load system roots and no roots provided
-    
+
 One of the down-sides to using the *scratch* image is that you no longer have access to the root CA certificates which come pre-installed in most base images. There are a few different options for dealing with this:
 
 * Disable SSL verification. This is **not** recommended for obvious reasons.
