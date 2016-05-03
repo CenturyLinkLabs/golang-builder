@@ -44,7 +44,26 @@ The *golang-builder* assumes that your "main" package (the package containing yo
 
 In the example above, the `hello.go` source file defines the "main" package for this project and lives at the root of the project directory structure. This project defines other packages ("api" and "greeting") but those are subdirectories off the root.
 
-This convention is in place so that the *golang-builder* knows where to find the "main" package in the project structure. In a future release, we may make this a configurable option in order to support projects with different directory structures.
+This convention is in place so that the *golang-builder* knows where to find the "main" package in the project structure. 
+
+If your "main" package does not reside at the root of your project structure, you can accomodate this by specifying the `MAIN_PATH` environment variable which references the relative path to your main package.
+
+For example, suppose your structure is like the following (slightly modified from above so that your "main" package resides in the "cli" subfolder):
+
+    .
+    ├─Dockerfile
+    ├─api
+    | ├─api.go
+    | └─api_test.go
+    ├─greeting
+    | ├─greeting.go
+    | └─greeting_test.go
+    └─cli
+      ├─hello.go
+      └─hello_test.go
+
+You would then add `MAIN_PATH=cli` to your environment specification.
+
 
 ### Canonical Import Path
 In addition to knowing where to find the "main" package, the *golang-builder* also needs to know the fully-qualified package name for your application. For the "hello" application shown above, the fully-qualified package name for the executable is "github.com/CenturyLink/hello" but there is no way to determine that just by looking at the project directory structure (during the development, the project directory would likely be mounted at `$GOPATH/src/github.com/CenturyLink/hello` so that the Go tools can determine the package name).
@@ -63,9 +82,13 @@ The problem with doing a `go get` with each build is that *golang-builder* may e
 If you are using Godep to manage your dependencies *golang-builder* will reference the packages in your `Godeps/_workspace` directory instead of downloading them via `go get`.
 
 ### Dockerfile
-If you would like to have *golang-builder* package your compiled Go application into a Docker image automatically then the final requirement is that your Dockerfile be placed at the root of your project directory structure. After compiling your Go application, *golang-builder* will execute a `docker build` with your Dockerfile.
+If you would like to have *golang-builder* package your compiled Go application into a Docker image automatically then the final requirement is that your Dockerfile be placed at the root of your project directory structure. 
 
-The compiled binary will be placed in the root of your project directory so your Dockerfile can be written with the assumption that the application binary is in the same directory as the Dockerfile itself:
+If your Dockerfile resides somewhere else, you can acommodate this by specifying the `DOCKER_BUILD_CONTEXT` env var. This will be used to override the default value of `"."`.
+
+After compiling your Go application, *golang-builder* will execute a `docker build` with your Dockerfile.
+
+The compiled binary will be placed (by default) in the root of your project directory so your Dockerfile can be written with the assumption that the application binary is in the same directory as the Dockerfile itself:
 
     FROM scratch
     EXPOSE 3000
@@ -74,7 +97,7 @@ The compiled binary will be placed in the root of your project directory so your
 
 In this case, the *hello* binary will be copied right to the root of the image and used as the entrypoint. Since we're using the empty *scratch* image as our base, there is no need to set-up any sort of directory structure inside the image.
 
-If *golang-builder* does **NOT** see a Dockerfile in your project directory it will simply stop after compiling your application.
+If *golang-builder* does **NOT** see a Dockerfile in your project directory (or `DOCKER_BUILD_CONTEXT` directory) it will simply stop after compiling your application.
 
 ## Usage
 
@@ -112,6 +135,8 @@ If you just want to compile your application without packaging it in a Docker im
 * LDFLAGS - flags to pass to the linker (defaults to '-s')
 * COMPRESS_BINARY - if set to true, will use UPX to compress the final binary (defaults to false)
 * OUTPUT - if set, will use the `-o` option with `go build` to output the final binary to the value of this env var
+* MAIN_PATH - if set, this (relative) path will be used as the location of the "main" package
+* DOCKER_BUILD_CONTEXT - if set, this (relative) path will be used as the build context location (where the Dockerfile should reside)
 
 The above are environment variables to be passed to the docker run command:
 
