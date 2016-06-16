@@ -112,6 +112,7 @@ If you just want to compile your application without packaging it in a Docker im
 * LDFLAGS - flags to pass to the linker (defaults to '-s')
 * COMPRESS_BINARY - if set to true, will use UPX to compress the final binary (defaults to false)
 * OUTPUT - if set, will use the `-o` option with `go build` to output the final binary to the value of this env var
+* GITHUB_TOKEN - if set, will use "https://${GITHUB_TOKEN}:x-oauth-basic@github.com/" to download dependencies from github. Allowing access to private repos.
 
 The above are environment variables to be passed to the docker run command:
 
@@ -120,6 +121,7 @@ The above are environment variables to be passed to the docker run command:
       -e LDFLAGS='-extldflags "-static"' \
       -e COMPRESS_BINARY=true \
       -e OUTPUT=/bin/my_go_binary \
+      -e GITHUB_TOKEN=my_github_auth_token \
       -v $(pwd):/src \
       centurylink/golang-builder
 
