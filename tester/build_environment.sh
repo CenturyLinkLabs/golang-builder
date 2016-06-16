@@ -29,6 +29,11 @@ mkdir -p "$(dirname "$pkgPath")"
 # Link source dir into GOPATH
 ln -sf /src "$pkgPath"
 
+# If a github token is present use that..
+if [ "${GITHUB_TOKEN}" != "" ]; then
+  git config --global url."https://${GITHUB_TOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+fi
+
 if [ -e "$pkgPath/vendor" ];
 then
     # Enable vendor experiment
