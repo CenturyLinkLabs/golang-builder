@@ -11,13 +11,23 @@ name=${pkgName##*/}
 # to the named output file
 #
 output=""
+outputFile=""
 if [[ ! -z "${OUTPUT}" ]];
 then
-  output="-o ${OUTPUT}"
+  outputFile="${OUTPUT}"
+  #
+  # If OUTPUT env var ends with "/", assume an output directory
+  # was specified, and we should append the executable name.
+  #
+  if [[ "$outputFile" == *"/" ]];
+  then
+    outputFile="${outputFile}${name}"
+  fi
+  output="-o ${outputFile}"
 fi
 
 # Compile statically linked version of package
-echo "Building $pkgName"
+echo "Building $pkgName => ${outputFile}"
 (
   CGO_ENABLED=${CGO_ENABLED:-0} \
   go build \
@@ -30,19 +40,25 @@ echo "Building $pkgName"
 
 if [[ "$COMPRESS_BINARY" == "true" ]];
 then
-  if [[ ! -z "${OUTPUT}" ]];
+  if [[ ! -z "${outputFile}" ]];
   then
-    goupx ${OUTPUT}
+    goupx "${outputFile}"
   else
     goupx $name
   fi
 fi
 
-if [[ -e "/var/run/docker.sock"  &&  -e "./Dockerfile" ]];
+dockerContextPath="."
+if [ ! -z "${DOCKER_BUILD_CONTEXT}" ];
+then
+  dockerContextPath="${DOCKER_BUILD_CONTEXT}"
+fi
+
+if [[ -e "/var/run/docker.sock"  &&  -e "${dockerContextPath}/Dockerfile" ]];
 then
   # Default TAG_NAME to package name if not set explicitly
   tagName=${tagName:-"$name":latest}
 
   # Build the image from the Dockerfile in the package directory
-  docker build -t $tagName .
+  docker build -t $tagName "$dockerContextPath"
 fi

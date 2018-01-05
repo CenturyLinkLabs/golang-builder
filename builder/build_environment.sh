@@ -8,20 +8,29 @@ then
   exit 990
 fi
 
-# Grab Go package name
-pkgName="$(go list -e -f '{{.ImportComment}}' 2>/dev/null || true)"
+# Construct Go package path
+if [ ! -z "${MAIN_PATH}" ]; 
+then
+  pkgName="$(go list -e -f '{{.ImportComment}}' ./... 2>/dev/null | grep ${MAIN_PATH} || true)"
+  path=$(cd /src && ls -d -1 ${MAIN_PATH})
+  pkgBase=${pkgName%/$path}
+else
+  pkgName="$(go list -e -f '{{.ImportComment}}' 2>/dev/null || true)"
+  pkgBase="$pkgName"
+fi
+
+echo "using pkgName: $pkgName, pkgBase: $pkgBase"
 
 if [ -z "$pkgName" ];
 then
-  echo "Error: Must add canonical import path to root package"
+  echo "Error: Must add canonical import path to root package, or specify the MAIN_PATH env var"
   exit 992
 fi
 
 # Grab just first path listed in GOPATH
 goPath="${GOPATH%%:*}"
 
-# Construct Go package path
-pkgPath="$goPath/src/$pkgName"
+pkgPath="$goPath/src/$pkgBase"
 
 # Set-up src directory tree in GOPATH
 mkdir -p "$(dirname "$pkgPath")"
@@ -31,8 +40,8 @@ ln -sf /src "$pkgPath"
 
 if [ -e "$pkgPath/vendor" ];
 then
-    # Enable vendor experiment
-    export GO15VENDOREXPERIMENT=1
+  # Enable vendor experiment
+  export GO15VENDOREXPERIMENT=1
 elif [ -e "$pkgPath/Godeps/_workspace" ];
 then
   # Add local godeps dir to GOPATH
