@@ -23,7 +23,7 @@ image which weighs-in at 500MB before you even copy your application into it.
 The *golang-builder* will accept your source code, compile it into a statically-linked binary
 and generate a minimal Docker image containing that binary.
 
-The implementation of the *golang-builder* was heavily inspired by the [Create the Smallest Possible Docker Container](http://blog.xebia.com/2014/07/04/create-the-smallest-possible-docker-container/) post on the [Xebia blog](http://blog.xebia.com).
+The implementation of the *golang-builder* was heavily inspired by the [Create the Smallest Possible Docker Container](http://blog.xebia.com/create-the-smallest-possible-docker-container/) post on the [Xebia blog](http://blog.xebia.com).
 
 ## Requirements
 In order for the golang-builder to work properly with your project, you need to follow a few simple conventions:
