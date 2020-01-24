@@ -4,6 +4,10 @@
 Containerized build environment for compiling an executable Golang package and packaging
 it in a light-weight Docker container.
 
+## NOTE
+
+This repo is no longer being maintained. Users are welcome to fork it, but we make no warranty of its functionality.
+
 ## Overview
 One of the (many) benefits of developing with Go is that you have the option of compiling your application into a self-contained, statically-linked binary. A statically-linked binary can be run in a container with NO other dependencies which means you can create incredibly small images.
 
